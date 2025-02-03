@@ -1,14 +1,9 @@
-Template: jump-start-server/db-name
-Type: string
-Default: rails
-Description: Enter the database name for Jump Start Server
+#!/bin/bash
+set -e
 
-Template: jump-start-server/db-user
-Type: string
-Default: jump_start
-Description: Enter the database user for Jump Start Server
+. /usr/share/debconf/confmodule  # Load Debconf functions
 
-Template: jump-start-server/db-password
-Type: password
-Description: Enter the database password for Jump Start Server
- This password will be used for the database user.
+db_input medium jump-start-server/db-name || true
+db_input medium jump-start-server/db-user || true
+db_input high jump-start-server/db-password || true
+db_go

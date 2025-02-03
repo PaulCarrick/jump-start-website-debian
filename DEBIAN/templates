@@ -1,0 +1,14 @@
+Template: jump-start-server/db-name
+Type: string
+Default: rails
+Description: Enter the database name for Jump Start Server
+
+Template: jump-start-server/db-user
+Type: string
+Default: jump_start
+Description: Enter the database user for Jump Start Server
+
+Template: jump-start-server/db-password
+Type: password
+Description: Enter the database password for Jump Start Server
+ This password will be used for the database user.
