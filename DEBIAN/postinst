@@ -1,12 +1,13 @@
 #!/bin/bash
 
-#postinst
+# postinst script for Jump Start Server
 
-set -e
+set -e  # Exit on error
+
+status=0
 
 . /usr/share/debconf/confmodule
 
-# Retrieve database values properly
 db_get jump-start-server/db-name
 DB_NAME="$RET"
 
@@ -16,36 +17,70 @@ DB_USERNAME="$RET"
 db_get jump-start-server/db-password
 export DB_PASSWORD="$RET"
 
-if [ ! -d "/opt/jump-start-server" ]; then
-  echo "Error: directory /opt/jump-start-server doesn't exist. Exiting..." >&2
-  exit 1
+if [ -z "${DB_NAME}" ]; then
+  echo "Please enter a database name." >&2
+  ((status+=1))
 fi
 
-cd /opt/jump-start-server/ || { echo "Failed to change directory." >&2; exit 2; }
+if [ -z "${DB_USERNAME}" ]; then
+  echo "Please enter a username for the database user." >&2
+  ((status+=2))
+fi
 
+if [ -z "${DB_PASSWORD}" ]; then
+  echo "Please enter a password for the database user." >&2
+  ((status+=3))
+fi
+
+if [ "${status}" -ne 0 ]; then
+  exit "${status}"
+fi
+
+install_directory="/opt/jump-start-website"
+
+if [ ! -d "${install_directory}" ]; then
+  echo "Error: directory ${install_directory} doesn't exist. Exiting..." >&2
+  exit 7
+fi
+
+cd "${install_directory}/" || { echo "Failed to change directory ${install_directory}." >&2; exit 8; }
+
+# Run Ruby Setup Script
 ruby bin/setup.rb "$DB_NAME" "$DB_USERNAME"
 
 # Install Bundler
-echo "Installing bundler..."
-gem install bundler -v '~> 2.5' || { echo "Failed to install bundler." >&2; exit 3; }
+echo "Installing Bundler..."
+if ! gem install bundler -v '~> 2.5'; then
+  echo "Failed to install Bundler." >&2
+  exit 9
+fi
 echo "Bundler installed."
 
 # Install Gems
 echo "Installing gems with Bundler..."
-bundle install || { echo "Failed to install gems." >&2; exit 4; }
+if ! bundle install; then
+  echo "Failed to install gems." >&2
+  exit 10
+fi
 echo "Gems installed."
 
 # Run Database Migrations
 echo "Running database migrations..."
-bundle exec rails db:migrate || { echo "Failed to migrate the database." >&2; exit 5; }
+if ! bundle exec rails db:migrate; then
+  echo "Failed to migrate the database." >&2
+  exit 11
+fi
 echo "Database migrations completed."
 
 # Precompile Assets (for Production)
 if [ "${RAILS_ENV}" = "production" ]; then
     echo "Precompiling assets for production..."
-    bundle exec rails assets:precompile || { echo "Failed to precompile assets." >&2; exit 6; }
+    if ! bundle exec rails assets:precompile; then
+      echo "Failed to precompile assets." >&2
+      exit 12
+    fi
     echo "Assets precompiled."
 fi
 
-echo "Jump Start Server configured."
+echo "Jump Start Server configured successfully."
 exit 0
