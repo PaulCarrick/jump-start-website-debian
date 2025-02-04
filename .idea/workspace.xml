@@ -5,9 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3f958845-0dad-4248-83b0-af9f43335c52" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bin/build.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/Packages" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/templates/Release" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jump-start-website-1.0.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jump-start-website-1.0.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DEBIAN/postinst" beforeDir="false" afterPath="$PROJECT_DIR$/DEBIAN/postinst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DEBIAN/templates" beforeDir="false" afterPath="$PROJECT_DIR$/DEBIAN/templates" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DEBIAN/config" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/config" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DEBIAN/control" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/control" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DEBIAN/postinst" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/postinst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DEBIAN/templates" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/templates" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,21 +48,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/paul/src/jump-start-website-1.0&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;ruby.structure.view.model.defaults.configured&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;ssh.settings&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/paul/src/jump-start-website-1.0",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "ruby.structure.view.model.defaults.configured": "true",
+    "settings.editor.selected.configurable": "ssh.settings",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="ReactDesignerToolWindowState">
     <option name="myId2Visible">
       <map>
@@ -59,6 +71,14 @@
         <entry key="com.intellij.reactbuddy.reactInspector" value="false" />
       </map>
     </option>
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/bin" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/distribution" />
+    </key>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -77,7 +97,8 @@
       <option name="presentableId" value="Default" />
       <updated>1738515035833</updated>
       <workItem from="1738515036871" duration="16103000" />
-      <workItem from="1738594002168" duration="11053000" />
+      <workItem from="1738594002168" duration="30899000" />
+      <workItem from="1738677866863" duration="3000" />
     </task>
     <servers />
   </component>

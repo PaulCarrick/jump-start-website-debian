@@ -1,0 +1,14 @@
+Package: {variables["package_name"]}
+Version: {variables["version"]}
+Architecture: all
+Maintainer: Paul Carrick <paul@paul-carrick.com>
+Depends: ruby, nodejs, bundler, git, postgresql, libpq-dev
+Filename: ./{variables["filename"]}
+Size: {variables[variables["filename"]]["file_size"]}
+MD5sum: {variables[variables["filename"]]["checksums"]["MD5Sum"]}
+SHA1: {variables[variables["filename"]]["checksums"]["SHA1"]}
+SHA256: {variables[variables["filename"]]["checksums"]["SHA256"]}
+Section: web
+Priority: optional
+Description: An app that simplifies the creation of a website.
+ Jump Start Server is a rails app that permits the creation of a website without any coding.

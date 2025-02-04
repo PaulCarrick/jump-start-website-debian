@@ -1,0 +1,33 @@
+Origin: {variables["project"]}
+Label: {variables["project_description"]}
+Suite: stable
+Codename: jumpstart
+Architectures: any
+Components: main
+Description: APT repository for {variables["project_description"]}
+Packages: Packages.gz
+Date: {variables["build_date"]}
+
+MD5Sum:
+ {variables["Packages"]["checksums"]["MD5Sum"]} Packages
+ {variables["Packages.gz"]["checksums"]["MD5Sum"]} Packages.gz
+ {variables["Release"]["checksums"]["MD5Sum"]} Release
+ {variables["i18n/Translation-en.gz"]["checksums"]["MD5Sum"]} i18n/Translation-en.gz
+
+SHA1:
+ {variables["Packages"]["checksums"]["SHA1"]} Packages
+ {variables["Packages.gz"]["checksums"]["SHA1"]} Packages.gz
+ {variables["Release"]["checksums"]["SHA1"]} Release
+ {variables["i18n/Translation-en.gz"]["checksums"]["SHA1"]} i18n/Translation-en.gz
+
+SHA256:
+ {variables["Packages"]["checksums"]["SHA256"]} Packages
+ {variables["Packages.gz"]["checksums"]["SHA256"]} Packages.gz
+ {variables["Release"]["checksums"]["SHA256"]} Release
+ {variables["i18n/Translation-en.gz"]["checksums"]["SHA256"]} i18n/Translation-en.gz
+
+SHA512:
+ {variables["Packages"]["checksums"]["SHA512"]} Packages
+ {variables["Packages.gz"]["checksums"]["SHA512"]} Packages.gz
+ {variables["Release"]["checksums"]["SHA512"]} Release
+ {variables["i18n/Translation-en.gz"]["checksums"]["SHA512"]} i18n/Translation-en.gz
