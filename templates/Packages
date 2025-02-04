@@ -10,5 +10,4 @@ SHA1: {variables[variables["filename"]]["checksums"]["SHA1"]}
 SHA256: {variables[variables["filename"]]["checksums"]["SHA256"]}
 Section: web
 Priority: optional
-Description: An app that simplifies the creation of a website.
- Jump Start Server is a rails app that permits the creation of a website without any coding.
+Description: An app that simplifies the creation of a website. Jump Start Server is a rails app that permits the creation of a website without any coding.

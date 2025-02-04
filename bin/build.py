@@ -10,6 +10,11 @@ import pathlib
 import shutil
 import subprocess
 import sys
+import pwd
+import grp
+from datetime import datetime, timezone
+from pathlib import Path
+
 
 # ANSI color codes for terminal messages
 GREEN = "\033[32m"
@@ -54,6 +59,10 @@ def display_message(error_level, message):
         sys.exit(error_level - 19)
 
 
+def get_current_error_level():
+    return current_error_level
+
+
 def increment_error_level(increment=1):
     """
     Increments current_error_level level by given increment.
@@ -85,7 +94,7 @@ def gzip_file(source_file, output_file):
                                                         "wb") as f_out:
             shutil.copyfileobj(f_in, f_out)
     except Exception as e:
-        display_message(current_error_level,
+        display_message(get_current_error_level(),
                         f"Error: Failed to compress {source_file}. {str(e)}")
     increment_error_level()
 
@@ -113,7 +122,7 @@ def compute_checksum(filename, checksum_type):
     hash_func = hash_func_map.get(checksum_type)
 
     if not hash_func:
-        display_message(current_error_level,
+        display_message(get_current_error_level(),
                         f"Error: Unknown checksum type '{checksum_type}'!")
         return None
 
@@ -127,45 +136,59 @@ def compute_checksum(filename, checksum_type):
 
         result = file_hash.hexdigest()
     except Exception as e:
-        display_message(current_error_level,
+        display_message(get_current_error_level(),
                         f"Error: Failed to compute checksum for {filename}. {str(e)}")
 
     increment_error_level()
     return result
 
 
-def setup_variables_for_file(file, variables):
+def setup_variables_for_file(filename, variables):
     """
-    Computes all the checksums and gets file size for a given file.
+    Computes all the checksums and gets the file size for a given file.
     Args:
-        file (str): The file compute the checksum and get the size for.
+        filename (str): The file compute the checksum and get the size for.
         variables (dict): The dict to store the results in.
-    Returns:
-        str: The checksum for the filename.
     """
     checksum_types = ["MD5Sum", "SHA1", "SHA256", "SHA512"]
 
-    if not os.path.isfile(file):
-        display_message(current_error_level, f"Error: File '{file}' not found!")
+    if not os.path.isfile(filename):
+        display_message(get_current_error_level(),
+                        f"Error: File '{filename}' not found!")
         return
 
     increment_error_level()
 
     try:
-        file_size = os.path.getsize(file)
+        file_size = os.path.getsize(filename)
     except Exception as e:
-        display_message(current_error_level,
-                        f"Error: Cannot get file size of {file}. {str(e)}")
+        display_message(get_current_error_level(),
+                        f"Error: Cannot get file size of {filename}. {str(e)}")
         return
 
     increment_error_level()
 
-    variables[file] = {"checksums": {}, "file_size": file_size}
+    file_path = Path(filename)
+    basename = file_path.name
+
+    variables[basename] = {"checksums": {}, "file_size": file_size}
 
     for checksum_type in checksum_types:
-        checksum = compute_checksum(file, checksum_type)
+        checksum = compute_checksum(filename, checksum_type)
+
         if checksum:
-            variables[file]["checksums"][checksum_type] = checksum
+            variables[basename]["checksums"][checksum_type] = checksum
+
+
+def setup_variables_for_files(file_names, variables):
+    """
+    Computes all the checksums and gets file size for a set of files.
+    Args:
+        file_names (list[str]): The files to compute the checksums and get the sizes for.
+        variables (dict): The dict to store the results in.
+    """
+    for file in file_names:
+        setup_variables_for_file(file, variables)
 
 
 def process_template(template_filename, output_filename, variables):
@@ -187,10 +210,10 @@ def process_template(template_filename, output_filename, variables):
                                           {"variables": variables})
                     outfile.write(processed_line + "\n")
                 except Exception as e:
-                    display_message(current_error_level,
+                    display_message(get_current_error_level(),
                                     f"Error processing line: {line.strip()} -> {e}")
     except FileNotFoundError:
-        display_message(current_error_level,
+        display_message(get_current_error_level(),
                         f"Error: Template file '{template_filename}' not found!")
 
     increment_error_level(2)
@@ -204,32 +227,35 @@ def parse_arguments():
         Dict: The parsed arguments.
     """
     script_path = pathlib.Path(__file__).resolve()
-    parent_directory = script_path.parent
+    parent_directory = script_path.parent.parent
     template_directory = parent_directory / "templates"
     output_directory = parent_directory / "output"
     parser = argparse.ArgumentParser(
             description="Package build and deployment script.")
 
-    parser.add_argument("-p", "--package", required=True,
-                        help="Specify the package name",
-                        default="jump-start-website")
-    parser.add_argument("-v", "--version", required=True,
-                        help="Specify the package version", default="1.0.0")
-    parser.add_argument("-f", "--filename", help="Specify the package filename")
     parser.add_argument("-d", "--dir",
                         help="Specify the distribution directory",
                         default="/var/www/html/distributions/debian")
-    parser.add_argument("-o", "--output", help="Specify the output directory",
-                        default=output_directory)
+    parser.add_argument("-f", "--filename", help="Specify the package filename")
     parser.add_argument("-n", "--no-build", help="Don't build the package",
                         action="store_false", dest="build", default=True)
     parser.add_argument("-N", "--no-install", help="Don't install the package",
                         action="store_false", dest="install", default=True)
+    parser.add_argument("-o", "--output", help="Specify the output directory",
+                        default=output_directory)
+    parser.add_argument("-p", "--package",
+                        help="Specify the package name",
+                        default="jump-start-website")
+    parser.add_argument("-P", "--package-description",
+                        help="Specify the package description",
+                        default="Jump Start Website")
     parser.add_argument("-s", "--skip-copy", help="Don't copy the package",
                         action="store_false", dest="copy", default=True)
     parser.add_argument("-t", "--templates",
                         help="Specify the templates directory",
                         default=template_directory)
+    parser.add_argument("-v", "--version",
+                        help="Specify the package version", default="1.0.0")
     parser.add_argument("-y", "--yes",
                         help="Automatically install the package without asking",
                         action="store_true", dest="auto_install", default=False)
@@ -244,70 +270,135 @@ def parse_arguments():
 
 def main():
     args = parse_arguments()
-    variables = {}
+
+    display_message(0, f"Building Package for {args.package_description}...")
+
+    packages_template = f"{args.templates}/Packages"
+    packages_file = f"{args.output}/Packages"
+    packages_gz_file = f"{args.output}/Packages.gz"
+    release_template = f"{args.templates}/Release"
+    release_file = f"{args.output}/Release"
+    inrelease_file = f"{args.output}/InRelease"
+    translation_file = f"{args.output}/i18n/Translation-en.gz"
+    gpg_key = "paul@paul-carrick.com"
+    current_time = datetime.now(timezone.utc)
+    build_date = current_time.strftime("%a, %d %b %Y %H:%M:%S %z")
+    output_file = args.output / args.filename
+
+    variables = {
+            "build_date":          build_date,
+            "package_description": args.package_description,
+            "package_name":        args.package,
+            "version":             args.version,
+            "filename":            args.filename,
+    }
 
     if args.build:
-        if os.path.isfile(args.package):
+        display_message(0,
+                        f"Building {args.filname}...")
+
+        if os.path.isfile(output_file):
             try:
-                os.remove(args.package)
-                display_message(0, f"Removed existing package: {args.package}")
+                os.remove(output_file)
+                display_message(0, f"Removed existing package: {output_file}")
             except Exception as e:
-                display_message(current_error_level,
-                                f"Cannot remove existing package {args.package}. {str(e)}")
+                display_message(get_current_error_level(),
+                                f"Cannot remove existing package {output_file}. {str(e)}")
 
         increment_error_level()
-        display_message(0, f"Building: {args.package}")
 
-        result = subprocess.run(["dpkg-deb", "--build", "distribution"],
-                                capture_output=True, text=True)
+        result = subprocess.run(["dpkg-deb",
+                                 "--build",
+                                 "distribution",
+                                 output_file
+                                 ],
+                                capture_output=True,
+                                text=True)
 
         if result.returncode != 0:
-            display_message(current_error_level,
+            display_message(get_current_error_level(),
                             f"Build failed: {result.stderr}")
+        else:
+            display_message(0,
+                            f"Package {args.filname} built successfully.")
 
         increment_error_level()
-        os.rename("distribution", args.package)
 
-    process_template(f"{args.templates}/Packages",
-                     f"{args.output}/Packages",
-                     variables)
+    display_message(0,
+                    f"Building {packages_file}...")
+    setup_variables_for_file(output_file, variables)
+    process_template(packages_template, packages_file, variables)
 
-    if os.path.isfile(f"{args.output}/Packages"):
-        gzip_file(f"{args.output}/Packages", f"{args.output}/Packages.gz")
+    if os.path.isfile(packages_file):
+        display_message(0,
+                        f"{packages_file} built successfully.")
+        display_message(0,
+                        f"Building {packages_gz_file}...")
+        gzip_file(packages_file, packages_gz_file)
+        display_message(0,
+                        f"{packages_gz_file} built successfully.")
     else:
-        display_message(current_error_level, "Could not create Packages!")
+        display_message(get_current_error_level(), f"Could not create {packages_file}!")
 
     increment_error_level()
+    display_message(0,
+                    f"Building {release_file}...")
+    setup_variables_for_files([packages_file, packages_gz_file, release_file, translation_file], variables)
+    process_template(release_template, release_file, variables)
+    increment_error_level()
+    display_message(0,
+                    f"{release_file} built successfully.")
 
-    process_template(f"{args.templates}/Release",
-                     f"{args.output}/Release",
-                     variables)
-
-    if os.path.isfile(f"{args.output}/Release"):
-        gzip_file(f"{args.output}/Release", f"{args.output}/Packages.gz")
-    else:
-        display_message(current_error_level, "Could not create Release!")
+    try:
+        display_message(0,
+                        f"Signing {release_file}...")
+        # Run GPG to sign the Release file and create InRelease
+        subprocess.run(["gpg", "--default-key", gpg_key, "--clearsign", "-o",
+                        inrelease_file, release_file],
+                       check=True)
+        display_message(0,
+                        f"Successfully signed {release_file} into {inrelease_file}")
+    except subprocess.CalledProcessError as e:
+        display_message(get_current_error_level(),
+                        f"Error signing Release file: {e}")
 
     increment_error_level()
 
     if not args.install:
+        display_message(0, f"Package {args.package_description} built successfully.")
         sys.exit(0)
 
     if not args.auto_install:
         user_input = input(
                 "Do you wish to install the package [y/N]: ").strip().lower()
+
         if user_input != "y":
+            display_message(0,
+                            f"Package {args.package_description} built successfully.")
             sys.exit(0)
 
     if args.copy:
-        try:
-            shutil.copy(args.package, args.dir)
-            display_message(0, f"Package {args.package} copied to {args.dir}")
-        except Exception as e:
-            display_message(current_error_level,
-                            f"Cannot copy {args.package} to {args.dir}. {str(e)}")
+        display_message(0, f"Copying files in {args.output} to {args.dir}...")
 
-    increment_error_level()
+        source_dir = args.output
+        destination_dir = args.dir
+
+        # Copy files
+        shutil.copytree(source_dir, destination_dir, dirs_exist_ok=True)
+        display_message(0, f"Files in {args.output} copied to {args.dir}.")
+        display_message(0, f"Changing permissions on files in {args.dir}...")
+
+        # Recursively change ownership
+        www_data_uid = pwd.getpwnam("www-data").pw_uid
+        www_data_gid = grp.getgrnam("www-data").gr_gid
+
+        for root, dirs, files in os.walk(destination_dir):
+            for name in dirs + files:
+                path = os.path.join(root, name)
+                os.chown(path, www_data_uid, www_data_gid)
+
+    display_message(0,
+                    f"Package {args.package_description} built successfully.")
 
 
 if __name__ == "__main__":
