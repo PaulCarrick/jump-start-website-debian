@@ -279,7 +279,8 @@ def main():
     release_template = f"{args.templates}/Release"
     release_file = f"{args.output}/Release"
     inrelease_file = f"{args.output}/InRelease"
-    translation_file = f"{args.output}/i18n/Translation-en.gz"
+    translation_file = f"{args.output}/i18n/Translation-en"
+    translation_gz_file = f"{args.output}/i18n/Translation-en.gz"
     gpg_key = "paul@paul-carrick.com"
     current_time = datetime.now(timezone.utc)
     build_date = current_time.strftime("%a, %d %b %Y %H:%M:%S %z")
@@ -295,7 +296,7 @@ def main():
 
     if args.build:
         display_message(0,
-                        f"Building {args.filname}...")
+                        f"Building {args.filename}...")
 
         if os.path.isfile(output_file):
             try:
@@ -320,7 +321,7 @@ def main():
                             f"Build failed: {result.stderr}")
         else:
             display_message(0,
-                            f"Package {args.filname} built successfully.")
+                            f"Package {args.filename} built successfully.")
 
         increment_error_level()
 
@@ -341,9 +342,27 @@ def main():
         display_message(get_current_error_level(), f"Could not create {packages_file}!")
 
     increment_error_level()
+
+    display_message(0,
+                    f"Creating {translation_gz_file}...")
+    open(translation_file, "w").close()
+
+    if os.path.isfile(translation_file):
+        display_message(0,
+                        f"{translation_file} built successfully.")
+        display_message(0,
+                        f"Building {translation_gz_file}...")
+        gzip_file(translation_file, translation_gz_file)
+        os.remove(translation_file)
+        display_message(0,
+                        f"{translation_gz_file} built successfully.")
+    else:
+        display_message(get_current_error_level(), f"Could not create {translation_gz_file}!")
+
+    increment_error_level()
     display_message(0,
                     f"Building {release_file}...")
-    setup_variables_for_files([packages_file, packages_gz_file, release_file, translation_file], variables)
+    setup_variables_for_files([packages_file, packages_gz_file, translation_gz_file], variables)
     process_template(release_template, release_file, variables)
     increment_error_level()
     display_message(0,
@@ -383,19 +402,45 @@ def main():
         source_dir = args.output
         destination_dir = args.dir
 
-        # Copy files
-        shutil.copytree(source_dir, destination_dir, dirs_exist_ok=True)
-        display_message(0, f"Files in {args.output} copied to {args.dir}.")
-        display_message(0, f"Changing permissions on files in {args.dir}...")
+        result = subprocess.run(["sudo",
+                                 "cp",
+                                 "-r",
+                                 inrelease_file,
+                                 packages_file,
+                                 packages_gz_file,
+                                 release_file,
+                                 output_file,
+                                 f"{args.output}/i18n",
+                                 destination_dir
+                                 ],
+                                capture_output=True,
+                                text=True)
+        
+        if result.returncode != 0:
+            display_message(get_current_error_level(),
+                            f"Copy failed: {result.stderr}")
+        else:
+            display_message(0,
+                            f"Copied files from {source_dir} to {destination_dir} built successfully.")
 
-        # Recursively change ownership
-        www_data_uid = pwd.getpwnam("www-data").pw_uid
-        www_data_gid = grp.getgrnam("www-data").gr_gid
+        increment_error_level()
+        display_message(0, f"Changing overship files in of {args.dir} to www-data...")
 
-        for root, dirs, files in os.walk(destination_dir):
-            for name in dirs + files:
-                path = os.path.join(root, name)
-                os.chown(path, www_data_uid, www_data_gid)
+        result = subprocess.run(["sudo",
+                                 "chown",
+                                 "-R",
+                                 "www-data:www-data",
+                                 destination_dir
+                                 ],
+                                capture_output=True,
+                                text=True)
+
+        if result.returncode != 0:
+            display_message(get_current_error_level(),
+                            f"Change ownership failed: {result.stderr}")
+        else:
+            display_message(0,
+                            f"Changed ownership in {destination_dir} to www-data.")
 
     display_message(0,
                     f"Package {args.package_description} built successfully.")
