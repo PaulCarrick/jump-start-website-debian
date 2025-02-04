@@ -9,21 +9,21 @@ Packages: Packages.gz
 Date: {variables["build_date"]}
 
 MD5Sum:
- {variables["Packages"]["checksums"]["MD5Sum"]} Packages
- {variables["Packages.gz"]["checksums"]["MD5Sum"]} Packages.gz
- {variables["Translation-en.gz"]["checksums"]["MD5Sum"]} i18n/Translation-en.gz
+ {variables["Packages"]["checksums"]["MD5Sum"]} {variables["Packages"]["file_size"]} Packages
+ {variables["Packages.gz"]["checksums"]["MD5Sum"]} {variables["Packages.gz"]["file_size"]} Packages.gz
+ {variables["Translation-en.gz"]["checksums"]["MD5Sum"]} {variables["Translation-en.gz"]["file_size"]} i18n/Translation-en.gz
 
 SHA1:
- {variables["Packages"]["checksums"]["SHA1"]} Packages
- {variables["Packages.gz"]["checksums"]["SHA1"]} Packages.gz
- {variables["Translation-en.gz"]["checksums"]["SHA1"]} i18n/Translation-en.gz
+ {variables["Packages"]["checksums"]["SHA1"]}  {variables["Packages"]["file_size"]} Packages
+ {variables["Packages.gz"]["checksums"]["SHA1"]} {variables["Packages.gz"]["file_size"]} Packages.gz
+ {variables["Translation-en.gz"]["checksums"]["SHA1"]} {variables["Translation-en.gz"]["file_size"]} i18n/Translation-en.gz
 
 SHA256:
- {variables["Packages"]["checksums"]["SHA256"]} Packages
- {variables["Packages.gz"]["checksums"]["SHA256"]} Packages.gz
- {variables["Translation-en.gz"]["checksums"]["SHA256"]} i18n/Translation-en.gz
+ {variables["Packages"]["checksums"]["SHA256"]}  {variables["Packages"]["file_size"]} Packages
+ {variables["Packages.gz"]["checksums"]["SHA256"]} {variables["Packages.gz"]["file_size"]} Packages.gz
+ {variables["Translation-en.gz"]["checksums"]["SHA256"]} {variables["Translation-en.gz"]["file_size"]} i18n/Translation-en.gz
 
 SHA512:
- {variables["Packages"]["checksums"]["SHA512"]} Packages
- {variables["Packages.gz"]["checksums"]["SHA512"]} Packages.gz
- {variables["Translation-en.gz"]["checksums"]["SHA512"]} i18n/Translation-en.gz
+ {variables["Packages"]["checksums"]["SHA512"]}  {variables["Packages"]["file_size"]} Packages
+ {variables["Packages.gz"]["checksums"]["SHA512"]} {variables["Packages.gz"]["file_size"]} Packages.gz
+ {variables["Translation-en.gz"]["checksums"]["SHA512"]} {variables["Translation-en.gz"]["file_size"]} i18n/Translation-en.gz
