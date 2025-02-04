@@ -5,20 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3f958845-0dad-4248-83b0-af9f43335c52" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/build.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/Packages" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/Release" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/distribution/opt/jump-start-server/.keep" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jump-start-website-1.0.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jump-start-website-1.0.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DEBIAN/config" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/config" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DEBIAN/control" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/control" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DEBIAN/postinst" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/postinst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DEBIAN/templates" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/templates" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,12 +24,12 @@
     &quot;assignee&quot;: &quot;PaulCarrick&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;git@github.com:PaulCarrick/jump-start-website-1.0.git&quot;,
-    &quot;accountId&quot;: &quot;4a1c3f12-e7c2-452f-ba4f-5478a5c32da7&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "git@github.com:PaulCarrick/jump-start-website-debian.git",
+    "accountId": "4a1c3f12-e7c2-452f-ba4f-5478a5c32da7"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -53,7 +43,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/paul/src/jump-start-website-1.0",
+    "last_opened_file_path": "/Users/paul/src/jump-start-website-debian",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -83,7 +73,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-RM-243.22562.213" />
+        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-PY-243.22562.220" />
+        <option value="bundled-python-sdk-0fc6c617c4bd-9a18a617cbe4-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-243.22562.220" />
       </set>
     </attachedChunks>
   </component>
@@ -99,6 +90,7 @@
       <workItem from="1738515036871" duration="16103000" />
       <workItem from="1738594002168" duration="30899000" />
       <workItem from="1738677866863" duration="3000" />
+      <workItem from="1738687244261" duration="507000" />
     </task>
     <servers />
   </component>

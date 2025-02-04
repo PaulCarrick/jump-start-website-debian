@@ -1,3 +1,6 @@
-/distribution/opt/jump-start-website/code
-/output/
-/contents/
+distribution/opt/jump-start-website/code
+output/
+!output/.keep
+contents/
+!contents/.keep
+distribution/opt/jump-start-server/code
