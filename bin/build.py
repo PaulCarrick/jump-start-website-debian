@@ -396,6 +396,9 @@ def build_release_file(release_template, release_file, inrelease_file, files,
         subprocess.run(["gpg", "--default-key", gpg_key, "--clearsign", "-o",
                         inrelease_file, release_file],
                        check=True)
+        subprocess.run(["gpg", "--default-key", gpg_key, "--detach-sign", "-o",
+                        inrelease_file, release_file],
+                       check=True)
         display_message(0,
                         f"Successfully signed {release_file} into {inrelease_file}")
     except subprocess.CalledProcessError as e:
