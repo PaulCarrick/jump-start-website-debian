@@ -364,27 +364,46 @@ def build_translation_file(translation_file, translation_gz_file):
     increment_error_level()
 
 
-def build_release_file(release_template, release_file, release_gpg_file, inrelease_file, files,
-                       gpg_key, variables):
+def build_release(output_dir, release_file, release_gpg_file, inrelease_file, gpg_key):
     """
-    Build the Release and InRelease files.
+    Build the Release, Release.gpg, and InRelease files.
 
     Args:
-        release_template (str): Path to the Release template file.
+        output_dir (str): The path to the directory containing the output files.
         release_file (str): Path to the Release file.
         release_gpg_file (str): Path to the Release.gpg file.
         inrelease_file (str): Path to the InRelease file.
-        files (list[str]): The files in the release.
         gpg_key (str): The GnuPG key.
-        variables (dict): The dict to store the file information in.
     """
     display_message(0,
                     f"Building {release_file}...")
-    setup_variables_for_files(files, variables)
-    process_template(release_template, release_file, variables)
+
+    result = subprocess.run(["apt-ftparchive", "release", "." ],
+                            capture_output=True, text=True, cwd=output_dir)
+
+    if result.returncode != 0:
+        display_message(get_current_error_level(),
+                        f"apt-ftparchive failed: {result.stderr}")
+
+    release = result.stdout
+
     increment_error_level()
+
+    if not release.strip():
+        display_message(get_current_error_level(),
+                        f"apt-ftparchive produced no output.")
+
+    try:
+        with open(release_file, "w") as file:
+            file.write(release)
+    except Exception as e:
+        display_message(get_current_error_level(),
+                        f"Cannot write {release_file}: {str(e)}.")
+
     display_message(0,
-                    f"{release_file} built successfully.")
+                    f"Created {release_file}.")
+
+    increment_error_level()
 
     if not gpg_key:
         display_message(get_current_error_level(),
@@ -514,7 +533,6 @@ def main():
     packages_template = f"{args.templates}/Packages"
     packages_file = f"{args.output}/Packages"
     packages_gz_file = f"{args.output}/Packages.gz"
-    release_template = f"{args.templates}/Release"
     release_file = f"{args.output}/Release"
     release_gpg_file = f"{args.output}/Release.gpg"
     inrelease_file = f"{args.output}/InRelease"
@@ -539,9 +557,7 @@ def main():
     build_package_file(packages_template, packages_file, packages_gz_file, debian_package_file,
                        variables)
     build_translation_file(translation_file, translation_gz_file)
-    build_release_file(release_template, release_file, release_gpg_file, inrelease_file,
-                       [packages_file, packages_gz_file, translation_gz_file],
-                       gpg_key, variables)
+    build_release(args.output, release_file, release_gpg_file, inrelease_file, gpg_key)
 
     if not args.install:
         display_message(0, f"Package {args.package_description} built successfully.")
