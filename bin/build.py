@@ -364,7 +364,7 @@ def build_translation_file(translation_file, translation_gz_file):
     increment_error_level()
 
 
-def build_release_file(release_template, release_file, inrelease_file, files,
+def build_release_file(release_template, release_file, release_gpg_file, inrelease_file, files,
                        gpg_key, variables):
     """
     Build the Release and InRelease files.
@@ -372,6 +372,7 @@ def build_release_file(release_template, release_file, inrelease_file, files,
     Args:
         release_template (str): Path to the Release template file.
         release_file (str): Path to the Release file.
+        release_gpg_file (str): Path to the Release.gpg file.
         inrelease_file (str): Path to the InRelease file.
         files (list[str]): The files in the release.
         gpg_key (str): The GnuPG key.
@@ -397,7 +398,7 @@ def build_release_file(release_template, release_file, inrelease_file, files,
                         inrelease_file, release_file],
                        check=True)
         subprocess.run(["gpg", "--default-key", gpg_key, "--detach-sign", "-o",
-                        inrelease_file, release_file],
+                        release_gpg_file, release_file],
                        check=True)
         display_message(0,
                         f"Successfully signed {release_file} into {inrelease_file}")
@@ -409,13 +410,13 @@ def build_release_file(release_template, release_file, inrelease_file, files,
 
 
 def copy_files(source_dir, destination_dir, debian_package, packages,
-               packages_gz, release, inrelease):
+               packages_gz, release, release_gpg, inrelease):
     """
     Copy the files to the distribution directory.
 
     This function requires sudo access to process the files because it copies the filed into the website.
     It's best to run this as a normal user and enter the sudo password (if needed).
-    You could run the entrie script as sudo but that will affect the files created in the output directory.
+    You could run the entire script as sudo but that will affect the files created in the output directory.
 
     Args:
         source_dir (str): Path to the source directory (the output directory).
@@ -424,6 +425,7 @@ def copy_files(source_dir, destination_dir, debian_package, packages,
         packages (str): Path to the Packages file.
         packages_gz (str): Path to the Packages.gz file.
         release (str): Path to the Release file.
+        release_gpg (str): Path to the Release.gpg file.
         inrelease (str): Path to the InRelease file.
     """
     display_message(0,
@@ -436,6 +438,7 @@ def copy_files(source_dir, destination_dir, debian_package, packages,
                              packages,
                              packages_gz,
                              release,
+                             release_gpg,
                              inrelease,
                              f"{source_dir}/i18n",
                              destination_dir
@@ -513,6 +516,7 @@ def main():
     packages_gz_file = f"{args.output}/Packages.gz"
     release_template = f"{args.templates}/Release"
     release_file = f"{args.output}/Release"
+    release_gpg_file = f"{args.output}/Release.gpg"
     inrelease_file = f"{args.output}/InRelease"
     translation_file = f"{args.output}/i18n/Translation-en"
     translation_gz_file = f"{args.output}/i18n/Translation-en.gz"
@@ -535,7 +539,7 @@ def main():
     build_package_file(packages_template, packages_file, packages_gz_file, debian_package_file,
                        variables)
     build_translation_file(translation_file, translation_gz_file)
-    build_release_file(release_template, release_file, inrelease_file,
+    build_release_file(release_template, release_file, release_gpg_file, inrelease_file,
                        [packages_file, packages_gz_file, translation_gz_file],
                        gpg_key, variables)
 
@@ -554,7 +558,7 @@ def main():
 
     if args.copy:
         copy_files(args.output, args.dir, debian_package_file, packages_file,
-                   packages_gz_file, release_file, inrelease_file)
+                   packages_gz_file, release_file, release_gpg_file, inrelease_file)
 
     display_message(0,
                     f"Package {args.package_description} built successfully.")
