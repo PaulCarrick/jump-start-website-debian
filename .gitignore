@@ -4,3 +4,4 @@ output/
 contents/
 !contents/.keep
 distribution/opt/jump-start-website/code
+jump-start-website-private.asc
