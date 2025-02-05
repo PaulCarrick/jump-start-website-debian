@@ -454,7 +454,7 @@ def copy_files(source_dir, destination_dir, debian_package, packages,
     result = subprocess.run(["sudo",
                              "chmod",
                              "0444",
-                             f"destination_dir/{debian_package}"
+                             f"{destination_dir}/{debian_package}"
                              ],
                             capture_output=True,
                             text=True)
