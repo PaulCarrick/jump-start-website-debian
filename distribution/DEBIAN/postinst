@@ -36,7 +36,7 @@ if [ "${status}" -ne 0 ]; then
   exit "${status}"
 fi
 
-install_directory="/opt/jump-start-website"
+install_directory="/opt/jump-start-website/rails"
 
 if [ ! -d "${install_directory}" ]; then
   echo "Error: directory ${install_directory} doesn't exist. Exiting..." >&2
