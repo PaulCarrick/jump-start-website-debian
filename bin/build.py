@@ -10,8 +10,6 @@ import pathlib
 import shutil
 import subprocess
 import sys
-import pwd
-import grp
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -82,15 +80,15 @@ def increment_error_level(increment=1):
     return current_error_level
 
 
-def gzip_file(source_file, output_file):
+def gzip_file(source_file, debian_package_file):
     """
     Compresses a file using GNU Zip (gzip).
     Args:
         source_file (str): The file to compress.
-        output_file (str): The compress filename.
+        debian_package_file (str): The compress filename.
     """
     try:
-        with open(source_file, "rb") as f_in, gzip.open(output_file,
+        with open(source_file, "rb") as f_in, gzip.open(debian_package_file,
                                                         "wb") as f_out:
             shutil.copyfileobj(f_in, f_out)
     except Exception as e:
@@ -268,66 +266,59 @@ def parse_arguments():
     return args
 
 
-def main():
-    args = parse_arguments()
+def build_debian_package(debian_package_file):
+    """
+    Build the Debian package.
 
-    display_message(0, f"Building Package for {args.package_description}...")
+    Args:
+        debian_package_file (str): Path to the output file.
+    """
+    display_message(0,
+                    f"Building {debian_package_file}...")
 
-    packages_template = f"{args.templates}/Packages"
-    packages_file = f"{args.output}/Packages"
-    packages_gz_file = f"{args.output}/Packages.gz"
-    release_template = f"{args.templates}/Release"
-    release_file = f"{args.output}/Release"
-    inrelease_file = f"{args.output}/InRelease"
-    translation_file = f"{args.output}/i18n/Translation-en"
-    translation_gz_file = f"{args.output}/i18n/Translation-en.gz"
-    gpg_key = "paul@paul-carrick.com"
-    current_time = datetime.now(timezone.utc)
-    build_date = current_time.strftime("%a, %d %b %Y %H:%M:%S %z")
-    output_file = args.output / args.filename
-
-    variables = {
-            "build_date":          build_date,
-            "package_description": args.package_description,
-            "package_name":        args.package,
-            "version":             args.version,
-            "filename":            args.filename,
-    }
-
-    if args.build:
-        display_message(0,
-                        f"Building {args.filename}...")
-
-        if os.path.isfile(output_file):
-            try:
-                os.remove(output_file)
-                display_message(0, f"Removed existing package: {output_file}")
-            except Exception as e:
-                display_message(get_current_error_level(),
-                                f"Cannot remove existing package {output_file}. {str(e)}")
-
-        increment_error_level()
-
-        result = subprocess.run(["dpkg-deb",
-                                 "--build",
-                                 "distribution",
-                                 output_file
-                                 ],
-                                capture_output=True,
-                                text=True)
-
-        if result.returncode != 0:
+    if os.path.isfile(debian_package_file):
+        try:
+            os.remove(debian_package_file)
+            display_message(0, f"Removed existing package: {debian_package_file}")
+        except Exception as e:
             display_message(get_current_error_level(),
-                            f"Build failed: {result.stderr}")
-        else:
-            display_message(0,
-                            f"Package {args.filename} built successfully.")
+                            f"Cannot remove existing package {debian_package_file}. {str(e)}")
 
-        increment_error_level()
+    increment_error_level()
 
+    result = subprocess.run(["dpkg-deb",
+                             "--build",
+                             "distribution",
+                             debian_package_file
+                             ],
+                            capture_output=True,
+                            text=True)
+
+    if result.returncode != 0:
+        display_message(get_current_error_level(),
+                        f"Build failed: {result.stderr}")
+    else:
+        display_message(0,
+                        f"Package {debian_package_file} built successfully.")
+
+    increment_error_level()
+
+
+def build_package_file(packages_template, packages_file, packages_gz_file, debian_package_file,
+                       variables):
+    """
+    Build the Packages files.
+
+    Args:
+        packages_template (str): Path to the Packages template file.
+        packages_file (str): Path to the Packages file.
+        packages_gz_file (str): Path to the Packages.gz file.
+        debian_package_file (str): Path to the Debian package file.
+        variables (dict): The dict to store the file information in.
+    """
     display_message(0,
                     f"Building {packages_file}...")
-    setup_variables_for_file(output_file, variables)
+    setup_variables_for_file(debian_package_file, variables)
     process_template(packages_template, packages_file, variables)
 
     if os.path.isfile(packages_file):
@@ -343,6 +334,15 @@ def main():
 
     increment_error_level()
 
+
+def build_translation_file(translation_file, translation_gz_file):
+    """
+    Build the Translation file.
+
+    Args:
+        translation_file (str): Path to the Translation file.
+        translation_gz_file (str): Path to the Translation.gz file.
+    """
     display_message(0,
                     f"Creating {translation_gz_file}...")
     open(translation_file, "w").close()
@@ -360,9 +360,24 @@ def main():
         display_message(get_current_error_level(), f"Could not create {translation_gz_file}!")
 
     increment_error_level()
+
+
+def build_release_file(release_template, release_file, inrelease_file, files,
+                       gpg_key, variables):
+    """
+    Build the Release and InRelease files.
+
+    Args:
+        release_template (str): Path to the Release template file.
+        release_file (str): Path to the Release file.
+        inrelease_file (str): Path to the InRelease file.
+        files (list[str]): The files in the release.
+        gpg_key (str): The GnuPG key.
+        variables (dict): The dict to store the file information in.
+    """
     display_message(0,
                     f"Building {release_file}...")
-    setup_variables_for_files([packages_file, packages_gz_file, translation_gz_file], variables)
+    setup_variables_for_files(files, variables)
     process_template(release_template, release_file, variables)
     increment_error_level()
     display_message(0,
@@ -383,6 +398,103 @@ def main():
 
     increment_error_level()
 
+
+def copy_files(source_dir, destination_dir, debian_package, packages,
+               packages_gz, release, inrelease):
+    """
+    Copy the files to the distribution directory.
+
+    Args:
+        source_dir (str): Path to the source directory (the output directory).
+        destination_dir (str): Path to the destination directory (the distribution directory).
+        debian_package (str): Path to the Debian package.
+        packages (str): Path to the Packages file.
+        packages_gz (str): Path to the Packages.gz file.
+        release (str): Path to the Release file.
+        inrelease (str): Path to the InRelease file.
+    """
+    display_message(0,
+                    f"Copying files in {source_dir} to {destination_dir}...")
+
+    result = subprocess.run(["sudo",
+                             "cp",
+                             "-r",
+                             debian_package,
+                             packages,
+                             packages_gz,
+                             release,
+                             inrelease,
+                             f"{source_dir}/i18n",
+                             destination_dir
+                             ],
+                            capture_output=True,
+                            text=True)
+
+    if result.returncode != 0:
+        display_message(get_current_error_level(),
+                        f"Copy failed: {result.stderr}")
+    else:
+        display_message(0,
+                        f"Copied files from {source_dir} to {destination_dir} built successfully.")
+
+    increment_error_level()
+    display_message(0, f"Changing ownership files in of {destination_dir} to www-data...")
+
+    result = subprocess.run(["sudo",
+                             "chown",
+                             "-R",
+                             "www-data:www-data",
+                             destination_dir
+                             ],
+                            capture_output=True,
+                            text=True)
+
+    if result.returncode != 0:
+        display_message(get_current_error_level(),
+                        f"Change ownership failed: {result.stderr}")
+    else:
+        display_message(0,
+                        f"Changed ownership in {destination_dir} to www-data.")
+
+    increment_error_level()
+
+
+def main():
+    args = parse_arguments()
+
+    display_message(0, f"Building Package for {args.package_description}...")
+
+    packages_template = f"{args.templates}/Packages"
+    packages_file = f"{args.output}/Packages"
+    packages_gz_file = f"{args.output}/Packages.gz"
+    release_template = f"{args.templates}/Release"
+    release_file = f"{args.output}/Release"
+    inrelease_file = f"{args.output}/InRelease"
+    translation_file = f"{args.output}/i18n/Translation-en"
+    translation_gz_file = f"{args.output}/i18n/Translation-en.gz"
+    gpg_key = "paul@paul-carrick.com"
+    current_time = datetime.now(timezone.utc)
+    build_date = current_time.strftime("%a, %d %b %Y %H:%M:%S %z")
+    debian_package_file = args.output / args.filename
+
+    variables = {
+            "build_date":          build_date,
+            "package_description": args.package_description,
+            "package_name":        args.package,
+            "version":             args.version,
+            "filename":            args.filename,
+    }
+
+    if args.build:
+        build_debian_package(debian_package_file)
+
+    build_package_file(packages_template, packages_file, packages_gz_file, debian_package_file,
+                       variables)
+    build_translation_file(translation_file, translation_gz_file)
+    build_release_file(release_template, release_file, inrelease_file,
+                       [packages_file, packages_gz_file, translation_gz_file],
+                       gpg_key, variables)
+
     if not args.install:
         display_message(0, f"Package {args.package_description} built successfully.")
         sys.exit(0)
@@ -397,50 +509,8 @@ def main():
             sys.exit(0)
 
     if args.copy:
-        display_message(0, f"Copying files in {args.output} to {args.dir}...")
-
-        source_dir = args.output
-        destination_dir = args.dir
-
-        result = subprocess.run(["sudo",
-                                 "cp",
-                                 "-r",
-                                 inrelease_file,
-                                 packages_file,
-                                 packages_gz_file,
-                                 release_file,
-                                 output_file,
-                                 f"{args.output}/i18n",
-                                 destination_dir
-                                 ],
-                                capture_output=True,
-                                text=True)
-        
-        if result.returncode != 0:
-            display_message(get_current_error_level(),
-                            f"Copy failed: {result.stderr}")
-        else:
-            display_message(0,
-                            f"Copied files from {source_dir} to {destination_dir} built successfully.")
-
-        increment_error_level()
-        display_message(0, f"Changing overship files in of {args.dir} to www-data...")
-
-        result = subprocess.run(["sudo",
-                                 "chown",
-                                 "-R",
-                                 "www-data:www-data",
-                                 destination_dir
-                                 ],
-                                capture_output=True,
-                                text=True)
-
-        if result.returncode != 0:
-            display_message(get_current_error_level(),
-                            f"Change ownership failed: {result.stderr}")
-        else:
-            display_message(0,
-                            f"Changed ownership in {destination_dir} to www-data.")
+        copy_files(args.output, args.dir, debian_package_file, packages_file,
+                   packages_gz_file, release_file, inrelease_file)
 
     display_message(0,
                     f"Package {args.package_description} built successfully.")
