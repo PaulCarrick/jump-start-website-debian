@@ -235,6 +235,8 @@ def parse_arguments():
                         help="Specify the distribution directory",
                         default="/var/www/html/distributions/debian")
     parser.add_argument("-f", "--filename", help="Specify the package filename")
+    parser.add_argument("-g", "--gpg_key", help="Specify the gpg key for signing",
+                        default=os.getenv("GPG_KEY"))
     parser.add_argument("-n", "--no-build", help="Don't build the package",
                         action="store_false", dest="build", default=True)
     parser.add_argument("-N", "--no-install", help="Don't install the package",
@@ -383,6 +385,10 @@ def build_release_file(release_template, release_file, inrelease_file, files,
     display_message(0,
                     f"{release_file} built successfully.")
 
+    if not gpg_key:
+        display_message(get_current_error_level(),
+                        f"No GPG key can't sign {release_file}.")
+
     try:
         display_message(0,
                         f"Signing {release_file}...")
@@ -403,6 +409,10 @@ def copy_files(source_dir, destination_dir, debian_package, packages,
                packages_gz, release, inrelease):
     """
     Copy the files to the distribution directory.
+
+    This function requires sudo access to process the files because it copies the filed into the website.
+    It's best to run this as a normal user and enter the sudo password (if needed).
+    You could run the entrie script as sudo but that will affect the files created in the output directory.
 
     Args:
         source_dir (str): Path to the source directory (the output directory).
@@ -440,6 +450,25 @@ def copy_files(source_dir, destination_dir, debian_package, packages,
     increment_error_level()
     display_message(0, f"Changing ownership files in of {destination_dir} to www-data...")
 
+    # Change permissions of debian file
+    result = subprocess.run(["sudo",
+                             "chmod",
+                             "0444",
+                             f"destination_dir/{debian_package}"
+                             ],
+                            capture_output=True,
+                            text=True)
+
+    if result.returncode != 0:
+        display_message(get_current_error_level(),
+                        f"Change permissions failed: {result.stderr}")
+    else:
+        display_message(0,
+                        f"Changed permissions of {debian_package} to 0444.")
+
+    increment_error_level()
+
+    # Change ownership of files to www-data
     result = subprocess.run(["sudo",
                              "chown",
                              "-R",
@@ -448,6 +477,15 @@ def copy_files(source_dir, destination_dir, debian_package, packages,
                              ],
                             capture_output=True,
                             text=True)
+
+    if result.returncode != 0:
+        display_message(get_current_error_level(),
+                        f"Change ownership failed: {result.stderr}")
+    else:
+        display_message(0,
+                        f"Changed ownership in {destination_dir} to www-data.")
+
+    increment_error_level()
 
     if result.returncode != 0:
         display_message(get_current_error_level(),
@@ -472,7 +510,7 @@ def main():
     inrelease_file = f"{args.output}/InRelease"
     translation_file = f"{args.output}/i18n/Translation-en"
     translation_gz_file = f"{args.output}/i18n/Translation-en.gz"
-    gpg_key = "paul@paul-carrick.com"
+    gpg_key = args.gpg_key or os.getenv("GPG_KEY")
     current_time = datetime.now(timezone.utc)
     build_date = current_time.strftime("%a, %d %b %Y %H:%M:%S %z")
     debian_package_file = args.output / args.filename
