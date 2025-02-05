@@ -5,8 +5,5 @@ Priority: optional
 Architecture: all
 Maintainer: Paul Carrick <paul@paul-carrick.com>
 Depends: ruby (>= 3.2), nodejs, bundler, git, postgresql, libpq-dev
-
-apt-get install -y curl build-essential libssl-dev libreadline-dev zlib1g-dev
-
 Description: An app that simplifies the creation of a website.
  Jump Start Server is a rails app that permite the creation of a website without any coding.
