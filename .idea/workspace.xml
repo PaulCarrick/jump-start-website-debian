@@ -7,6 +7,7 @@
     <list default="true" id="3f958845-0dad-4248-83b0-af9f43335c52" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/distribution/DEBIAN/config" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/config" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/distribution/DEBIAN/postinst" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/postinst" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/distribution/DEBIAN/templates" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/templates" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -129,7 +130,7 @@
       <workItem from="1738594002168" duration="30899000" />
       <workItem from="1738677866863" duration="3000" />
       <workItem from="1738687244261" duration="13783000" />
-      <workItem from="1738762473714" duration="22858000" />
+      <workItem from="1738762473714" duration="23528000" />
     </task>
     <servers />
   </component>

@@ -8,13 +8,13 @@ status=0
 
 . /usr/share/debconf/confmodule
 
-db_get jump-start-server/db-name
+db_get jump-start-website/db-name
 DB_NAME="$RET"
 
-db_get jump-start-server/db-user
+db_get jump-start-website/db-user
 DB_USERNAME="$RET"
 
-db_get jump-start-server/db-password
+db_get jump-start-website/db-password
 export DB_PASSWORD="$RET"
 
 if [ -z "${DB_NAME}" ]; then

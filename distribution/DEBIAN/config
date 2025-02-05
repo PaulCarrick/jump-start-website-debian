@@ -3,7 +3,7 @@ set -e
 
 . /usr/share/debconf/confmodule  # Load Debconf functions
 
-db_input high jump-start-server/db-name || true
-db_input high jump-start-server/db-user || true
-db_input critical jump-start-server/db-password || true
+db_input high jump-start-website/db-name || true
+db_input high jump-start-website/db-user || true
+db_input critical jump-start-website/db-password || true
 db_go
