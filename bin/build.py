@@ -451,10 +451,13 @@ def copy_files(source_dir, destination_dir, debian_package, packages,
     display_message(0, f"Changing ownership files in of {destination_dir} to www-data...")
 
     # Change permissions of debian file
+    file_path = Path(debian_package)
+    debian_file = file_path.name
+
     result = subprocess.run(["sudo",
                              "chmod",
                              "0444",
-                             f"{destination_dir}/{debian_package}"
+                             f"{destination_dir}/{debian_file}"
                              ],
                             capture_output=True,
                             text=True)
