@@ -394,10 +394,10 @@ def build_release_file(release_template, release_file, release_gpg_file, inrelea
         display_message(0,
                         f"Signing {release_file}...")
         # Run GPG to sign the Release file and create InRelease
-        subprocess.run(["gpg", "--default-key", gpg_key, "--clearsign", "-o",
+        subprocess.run(["gpg", "-u", gpg_key, "--clearsign", "-o",
                         inrelease_file, release_file],
                        check=True)
-        subprocess.run(["gpg", "--default-key", gpg_key, "--detach-sign", "-o",
+        subprocess.run(["gpg", "-u", gpg_key, "--detach-sign", "-o",
                         release_gpg_file, release_file],
                        check=True)
         display_message(0,
