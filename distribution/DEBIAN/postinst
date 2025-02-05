@@ -6,6 +6,20 @@ set -e  # Exit on error
 
 status=0
 
+# Install ruby-install
+curl -L https://github.com/postmodern/ruby-install/archive/refs/tags/v0.9.1.tar.gz | tar -xz
+cd ruby-install-0.9.1
+make install
+cd ..
+rm -rf ruby-install-0.9.1
+
+# Install Ruby 3.2
+ruby-install ruby 3.2.2
+
+# Add Ruby 3.2 to PATH
+echo 'export PATH="$HOME/.rubies/ruby-3.2.2/bin:$PATH"' >> /etc/profile.d/ruby.sh
+source /etc/profile.d/ruby.sh
+
 . /usr/share/debconf/confmodule
 
 db_get jump-start-website/db-name

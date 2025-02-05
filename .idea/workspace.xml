@@ -6,9 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="3f958845-0dad-4248-83b0-af9f43335c52" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/distribution/DEBIAN/config" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/config" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/distribution/DEBIAN/control" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/control" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/distribution/DEBIAN/postinst" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/postinst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/distribution/DEBIAN/templates" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/templates" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,23 +48,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.Build Debian.executor&quot;: &quot;Debug&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/paul/src/jump-start-website-debian/output&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;ruby.structure.view.model.defaults.configured&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.Build Debian.executor": "Debug",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/paul/src/jump-start-website-debian",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "ruby.structure.view.model.defaults.configured": "true",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="ReactDesignerToolWindowState">
     <option name="myId2Visible">
       <map>
@@ -112,8 +111,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-PY-243.22562.220" />
-        <option value="bundled-python-sdk-0fc6c617c4bd-9a18a617cbe4-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-243.22562.220" />
+        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-RM-243.22562.213" />
       </set>
     </attachedChunks>
   </component>
@@ -130,7 +128,8 @@
       <workItem from="1738594002168" duration="30899000" />
       <workItem from="1738677866863" duration="3000" />
       <workItem from="1738687244261" duration="13783000" />
-      <workItem from="1738762473714" duration="23528000" />
+      <workItem from="1738762473714" duration="24689000" />
+      <workItem from="1738790664926" duration="1053000" />
     </task>
     <servers />
   </component>
