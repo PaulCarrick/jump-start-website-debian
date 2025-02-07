@@ -1,7 +1,7 @@
-distribution/opt/jump-start-website/code
+distribution/tmp/jump-start-website/code
 output/
 !output/.keep
 contents/
 !contents/.keep
-distribution/opt/jump-start-website/code
+distribution/tmp/jump-start-website/code
 jump-start-website-private.asc

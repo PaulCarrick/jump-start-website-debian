@@ -4,9 +4,16 @@
 
 set -e  # Exit on error
 
-status=0
-
 . /usr/share/debconf/confmodule
+
+db_get jump-start-website/install-dir
+INSTALL_DIRECTORY="$RET"
+
+db_get jump-start-website/owner
+OWNER="$RET"
+
+db_get jump-start-website/install-ruby
+INSTALL_RUBY="$RET"
 
 db_get jump-start-website/db-name
 DB_NAME="$RET"
@@ -17,70 +24,66 @@ DB_USERNAME="$RET"
 db_get jump-start-website/db-password
 export DB_PASSWORD="$RET"
 
+if [ -z "${INSTALL_DIRECTORY}" ]; then
+  echo "Please enter an install directory." >&2
+  exit 1
+fi
+
+if [ -z "${OWNER}" ]; then
+  echo "Please specify an owner for the Rails code." >&2
+  exit 1
+fi
+
+if [ -z "${INSTALL_RUBY}" ]; then
+  echo "Please specify if ruby is to be installed." >&2
+  exit 1
+fi
+
 if [ -z "${DB_NAME}" ]; then
   echo "Please enter a database name." >&2
-  ((status+=1))
+  exit 1
 fi
 
 if [ -z "${DB_USERNAME}" ]; then
   echo "Please enter a username for the database user." >&2
-  ((status+=2))
+  exit 1
 fi
 
 if [ -z "${DB_PASSWORD}" ]; then
   echo "Please enter a password for the database user." >&2
-  ((status+=3))
+  exit 1
 fi
 
-if [ "${status}" -ne 0 ]; then
-  exit "${status}"
+if [ "$INSTALL_RUBY" = "true" ]; then
+  apt update && apt install -y curl build-essential libssl-dev libreadline-dev zlib1g-dev
+
+  if ! command -v ruby-install >/dev/null; then
+      curl -L https://github.com/postmodern/ruby-install/archive/refs/tags/v0.9.1.tar.gz | tar -xz
+      cd ruby-install-0.9.1
+      make install
+      cd ..
+      rm -rf ruby-install-0.9.1
+  fi
+
+  sudo -u "$OWNER" ruby-install ruby 3.2
+
+  echo 'export PATH="$HOME/.rubies/ruby-3.2.*/bin:$PATH"' | sudo -u "$OWNER" tee -a ~"$OWNER"/.bashrc > /dev/null
 fi
 
-install_directory="/opt/jump-start-website/rails"
-
-if [ ! -d "${install_directory}" ]; then
-  echo "Error: directory ${install_directory} doesn't exist. Exiting..." >&2
-  exit 7
+if ! command -v ruby >/dev/null 2>&1 || ! ruby -v | grep -q " 3.2."; then
+  echo "Ruby 3.2.* could not be found." >&2
+  exit 1
 fi
 
-cd "${install_directory}/" || { echo "Failed to change directory ${install_directory}." >&2; exit 8; }
-
-# Run Ruby Setup Script
-ruby bin/setup.rb "$DB_NAME" "$DB_USERNAME"
-
-# Install Bundler
-echo "Installing Bundler..."
-if ! gem install bundler -v '~> 2.5'; then
-  echo "Failed to install Bundler." >&2
-  exit 9
-fi
-echo "Bundler installed."
-
-# Install Gems
-echo "Installing gems with Bundler..."
-if ! bundle install; then
-  echo "Failed to install gems." >&2
-  exit 10
-fi
-echo "Gems installed."
-
-# Run Database Migrations
-echo "Running database migrations..."
-if ! bundle exec rails db:migrate; then
-  echo "Failed to migrate the database." >&2
-  exit 11
-fi
-echo "Database migrations completed."
-
-# Precompile Assets (for Production)
-if [ "${RAILS_ENV}" = "production" ]; then
-    echo "Precompiling assets for production..."
-    if ! bundle exec rails assets:precompile; then
-      echo "Failed to precompile assets." >&2
-      exit 12
-    fi
-    echo "Assets precompiled."
+if [ ! -d "${INSTALL_DIRECTORY}" ]; then
+  mkdir -p "${INSTALL_DIRECTORY}"
 fi
 
+TMP_DIR=$(dpkg-query -L jump-start-website | grep -E '^/usr/share/' | head -n 1)
+cp -r "${TMP_DIR}/"* "${INSTALL_DIRECTORY}" || { echo "Failed to copy files from directory ${TMP_DIR} to '${INSTALL_DIRECTORY}'." >&2; exit 1; }
+chown -R "${OWNER}:${OWNER}" "${INSTALL_DIRECTORY}" || { echo "Failed to change owner to ${OWNER} for ${INSTALL_DIRECTORY}'." >&2; exit 1; }
+rm -rf "${TMP_DIR}" || true
+cd "${INSTALL_DIRECTORY}" || { echo "Failed to change directory '${INSTALL_DIRECTORY}'." >&2; exit 1; }
+su "$OWNER" -c "bin/setup_ruby.rb $DB_NAME $DB_USERNAME $DB_PASSWORD"
 echo "Jump Start Server configured successfully."
 exit 0
