@@ -1,39 +1,43 @@
-Template: jump-start-website/install-dir
-Type: string
-Default: /opt/jump-start-website/rails
-Description: Installation directory for Jump Start Website
- Please specify the directory where Jump Start Website should be installed.
+Template: jump-start-website/error
+Type: note
+Description: Error: Invalid input detected. Please check your input and try again.
 
 Template: jump-start-website/owner
 Type: string
 Description: Enter the username that the code should run as (required)
  Rails code should not normally be run as root.
  Please enter the username that the Rails code should be owned by and normally run as.
- Note: The user must exist.
+ Note: If the user does not exist it will be created.
 
-Template: jump-start-website/install-ruby
-Type: boolean
-Default: true
-Description: Install Ruby 3.2 (ruby >= 3.2 required)?
- Select "Yes" to install Ruby 3.2, or "No" to skip (you need to have it install already).
-
-Template: jump-start-website/install-ruby
+Template: jump-start-website/install-dir
 Type: string
 Default: /opt/jump-start-website/rails
 Description: Installation directory for Jump Start Website
- Please specify the directory where Jump Start Website should be installed.
+ Please specify the directory where Jump Start Website should be installed (required).
 
 Template: jump-start-website/db-name
 Type: string
 Default: rails
-Description: Enter the database name for Jump Start Server
+Description: Enter the database name for Jump Start Server (required).
 
 Template: jump-start-website/db-user
 Type: string
 Default: jump_start
-Description: Enter the database user for Jump Start Server
+Description: Enter the database user for Jump Start Server (required).
 
 Template: jump-start-website/db-password
 Type: password
-Description: Enter the database password for Jump Start Server
+Description: Enter the database password for Jump Start Server (required).
  This password will be used for the database user.
+
+Template: jump-start-website/install-ruby
+Type: select
+Choices: Yes, No, Quit
+Default: Yes
+Description: Should Ruby be installed? Ruby 3.2 or greater is required ro un.
+
+Template: jump-start-website/confirm-install
+Type: select
+Choices: Yes, No, Quit
+Default: Yes
+Description: Setup is done. Should the installation continue?

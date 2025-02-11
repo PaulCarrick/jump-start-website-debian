@@ -1,89 +1,161 @@
 #!/bin/bash
 
-# postinst script for Jump Start Server
-
 set -e  # Exit on error
 
-. /usr/share/debconf/confmodule
+trap "echo 'Installation canceled.'; db_stop; exit 1" SIGINT
 
-db_get jump-start-website/install-dir
-INSTALL_DIRECTORY="$RET"
+user_exists() {
+  id "$1" &>/dev/null
+}
+
+. /usr/share/debconf/confmodule
 
 db_get jump-start-website/owner
 OWNER="$RET"
 
-db_get jump-start-website/install-ruby
-INSTALL_RUBY="$RET"
+while [ -z "${OWNER}" ] || ! user_exists "${OWNER}"; do
+  db_fset jump-start-website/error seen false
+  db_set jump-start-website/error "ERROR: You must enter a valid owner (enter 'quit' to abort install)."
+  db_input critical jump-start-website/error
+  db_go
+
+  db_fset jump-start-website/owner seen false
+  db_input critical jump-start-website/owner
+  db_go
+
+  db_get jump-start-website/owner
+  OWNER="$RET"
+
+  if [ "${OWNER}" = "quit" ]; then
+    echo "Installation aborted by user."
+    exit 1
+  fi
+done
+
+HOME_DIR=$(eval echo ~"$OWNER")
+DEFAULT_DIR="${HOME_DIR}/rails"
+
+db_set jump-start-website/install-dir "$DEFAULT_DIR"
+db_fset jump-start-website/install-dir seen false
+db_input critical jump-start-website/install-dir
+db_go
+
+db_get jump-start-website/install-dir
+INSTALL_DIRECTORY="$RET"
+
+if [ ! -d "${INSTALL_DIRECTORY}" ]; then
+  echo "Creating installation directory: ${INSTALL_DIRECTORY}"
+  mkdir -p "${INSTALL_DIRECTORY}" || { echo "Failed to create directory."; exit 1; }
+fi
 
 db_get jump-start-website/db-name
 DB_NAME="$RET"
 
+while [ -z "${DB_NAME}" ]; do
+  db_fset jump-start-website/error seen false
+  db_set jump-start-website/error "ERROR: You must enter a database name (enter 'quit' to abort install)."
+  db_input critical jump-start-website/error
+  db_go
+
+  db_fset jump-start-website/db-name seen false
+  db_input critical jump-start-website/db-name
+  db_go
+
+  db_get jump-start-website/db-name
+  DB_NAME="$RET"
+
+  if [ "${DB_NAME}" = "quit" ]; then
+    echo "Installation aborted by user."
+    exit 1
+  fi
+done
+
 db_get jump-start-website/db-user
-DB_USERNAME="$RET"
+DB_USER="$RET"
+
+while [ -z "${DB_USER}" ]; do
+  db_fset jump-start-website/error seen false
+  db_set jump-start-website/error "ERROR: You must enter a database user (enter 'quit' to abort install)."
+  db_input critical jump-start-website/error
+  db_go
+
+  db_fset jump-start-website/db-user seen false
+  db_input critical jump-start-website/db-user
+  db_go
+
+  db_get jump-start-website/db-user
+  DB_USER="$RET"
+
+  if [ "${DB_USER}" = "quit" ]; then
+    echo "Installation aborted by user."
+    exit 1
+  fi
+done
 
 db_get jump-start-website/db-password
-export DB_PASSWORD="$RET"
+DB_PASSWORD="$RET"
 
-if [ -z "${INSTALL_DIRECTORY}" ]; then
-  echo "Please enter an install directory." >&2
-  exit 1
-fi
+while [ -z "${DB_PASSWORD}" ]; do
+  db_fset jump-start-website/error seen false
+  db_set jump-start-website/error "ERROR: You must enter a database password (enter 'quit' to abort install)."
+  db_input critical jump-start-website/error
+  db_go
 
-if [ -z "${OWNER}" ]; then
-  echo "Please specify an owner for the Rails code." >&2
-  exit 1
-fi
+  db_fset jump-start-website/db-password seen false
+  db_input critical jump-start-website/db-password
+  db_go
 
-if [ -z "${INSTALL_RUBY}" ]; then
-  echo "Please specify if ruby is to be installed." >&2
-  exit 1
-fi
+  db_get jump-start-website/db-password
+  DB_PASSWORD="$RET"
 
-if [ -z "${DB_NAME}" ]; then
-  echo "Please enter a database name." >&2
-  exit 1
-fi
-
-if [ -z "${DB_USERNAME}" ]; then
-  echo "Please enter a username for the database user." >&2
-  exit 1
-fi
-
-if [ -z "${DB_PASSWORD}" ]; then
-  echo "Please enter a password for the database user." >&2
-  exit 1
-fi
-
-if [ "$INSTALL_RUBY" = "true" ]; then
-  apt update && apt install -y curl build-essential libssl-dev libreadline-dev zlib1g-dev
-
-  if ! command -v ruby-install >/dev/null; then
-      curl -L https://github.com/postmodern/ruby-install/archive/refs/tags/v0.9.1.tar.gz | tar -xz
-      cd ruby-install-0.9.1
-      make install
-      cd ..
-      rm -rf ruby-install-0.9.1
+  if [ "${DB_PASSWORD}" = "quit" ]; then
+    echo "Installation aborted by user."
+    exit 1
   fi
+done
 
-  sudo -u "$OWNER" ruby-install ruby 3.2
+db_get jump-start-website/install-ruby
+INSTALL_RUBY="$RET"
 
-  echo 'export PATH="$HOME/.rubies/ruby-3.2.*/bin:$PATH"' | sudo -u "$OWNER" tee -a ~"$OWNER"/.bashrc > /dev/null
+db_get jump-start-website/confirm-install
+CONFIRM_INSTALL="$RET"
+
+while [ -z "${CONFIRM_INSTALL}" ] || [[ ! "$CONFIRM_INSTALL" =~ ^(Yes|No|Quit)$ ]]; do
+  db_fset jump-start-website/error seen false
+  db_set jump-start-website/error "ERROR: You must confirm installation (Yes, No, Quit)."
+  db_input critical jump-start-website/error
+  db_go
+
+  db_fset jump-start-website/confirm-install seen false
+  db_input critical jump-start-website/confirm-install
+  db_go
+
+  db_get jump-start-website/confirm-install
+  CONFIRM_INSTALL="$RET"
+
+  if [ "$CONFIRM_INSTALL" = "Quit" ]; then
+    echo "Installation aborted by user."
+    exit 1
+  fi
+done
+
+if [ "$INSTALL_RUBY" = "Yes" ]; then
+  apt-get update
+  apt-get install -y curl build-essential libssl-dev libreadline-dev zlib1g-dev
+
+  curl -L https://github.com/postmodern/ruby-install/archive/refs/tags/v0.9.1.tar.gz | tar -xz
+  cd ruby-install-0.9.1
+  make install
+  cd ..
+  rm -rf ruby-install-0.9.1
+
+  ruby-install ruby 3.2.2
+
+  echo 'export PATH="$HOME/.rubies/ruby-3.2.2/bin:$PATH"' >> /etc/profile.d/ruby.sh
+  source /etc/profile.d/ruby.sh
 fi
 
-if ! command -v ruby >/dev/null 2>&1 || ! ruby -v | grep -q " 3.2."; then
-  echo "Ruby 3.2.* could not be found." >&2
-  exit 1
-fi
+su "$OWNER" -c "bin/setup_ruby.rb $DB_NAME $DB_USER $DB_PASSWORD"
 
-if [ ! -d "${INSTALL_DIRECTORY}" ]; then
-  mkdir -p "${INSTALL_DIRECTORY}"
-fi
-
-TMP_DIR=$(dpkg-query -L jump-start-website | grep -E '^/usr/share/' | head -n 1)
-cp -r "${TMP_DIR}/"* "${INSTALL_DIRECTORY}" || { echo "Failed to copy files from directory ${TMP_DIR} to '${INSTALL_DIRECTORY}'." >&2; exit 1; }
-chown -R "${OWNER}:${OWNER}" "${INSTALL_DIRECTORY}" || { echo "Failed to change owner to ${OWNER} for ${INSTALL_DIRECTORY}'." >&2; exit 1; }
-rm -rf "${TMP_DIR}" || true
-cd "${INSTALL_DIRECTORY}" || { echo "Failed to change directory '${INSTALL_DIRECTORY}'." >&2; exit 1; }
-su "$OWNER" -c "bin/setup_ruby.rb $DB_NAME $DB_USERNAME $DB_PASSWORD"
 echo "Jump Start Server configured successfully."
 exit 0
