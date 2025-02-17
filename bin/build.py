@@ -29,9 +29,9 @@ def main():
     display_message(0, f"Building Package for {args.package_description}...")
 
     # Setup variables
-    deb_package_path = f"{args.output}/pool/main"
+    deb_package_path = f"{args.output_directory}/pool/main"
     debian_package_file = f"{deb_package_path}/{args.filename}"
-    stable_path = f"{args.output}/dists/stable"
+    stable_path = f"{args.output_directory}/dists/stable"
     main_path = f"{stable_path}/main"
     gpg_key = args.gpg_key or os.getenv("GPG_KEY")
     binary_directories = ["binary-amd64", "binary-arm64"]
