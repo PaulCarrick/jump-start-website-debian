@@ -48,7 +48,7 @@ def main():
         build_debian_package(debian_package_file)
 
     build_translation_file(stable_path)
-    build_packages_files(deb_package_path, binary_directories, f"pool/main/{debian_package_filename}")
+    build_packages_files(main_path, deb_package_path, binary_directories, f"pool/main/{debian_package_filename}")
     build_release(stable_path, gpg_key)
 
     if not args.install:
@@ -178,7 +178,7 @@ def build_translation_file(stable_path):
 
 
 # noinspection PyBroadException
-def build_packages_files(main_path, binary_directories, deb_file_path):
+def build_packages_files(main_path, debian_path, binary_directories, deb_filename):
     """
     Build the Packages files.
 
@@ -195,7 +195,7 @@ def build_packages_files(main_path, binary_directories, deb_file_path):
 
         display_message(0, f"Building Package in {binary_path}...")
 
-        package_contents = run_command(f"dpkg-scanpackages {main_path} /dev/null", True, True)
+        package_contents = run_command(f"dpkg-scanpackages {debian_path} /dev/null", True, True)
 
         if not package_contents.strip():
             display_message(get_current_error_level(), "dpkg-scanpackage produced no output.")
@@ -207,7 +207,7 @@ def build_packages_files(main_path, binary_directories, deb_file_path):
 
         for line in package_contents:
             if line.startswith("Filename:"):
-                line = f"Filename: {deb_file_path}"
+                line = f"Filename: pool/main/{deb_filename}"
 
             output.append(line)
 
