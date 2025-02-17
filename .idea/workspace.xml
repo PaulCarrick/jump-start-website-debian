@@ -5,10 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3f958845-0dad-4248-83b0-af9f43335c52" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/distribution/DEBIAN/postrm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/distribution/DEBIAN/postinst" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/postinst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/distribution/DEBIAN/templates" beforeDir="false" afterPath="$PROJECT_DIR$/distribution/DEBIAN/templates" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,6 +134,7 @@
       <workItem from="1739024113261" duration="4337000" />
       <workItem from="1739120715024" duration="598000" />
       <workItem from="1739196458666" duration="4000" />
+      <workItem from="1739805626840" duration="966000" />
     </task>
     <servers />
   </component>
