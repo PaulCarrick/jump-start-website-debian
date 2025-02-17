@@ -136,10 +136,10 @@ def build_debian_package(debian_package_path):
 
     result = run_command(f"dpkg-deb --build distribution {debian_package_path}", True, False)
 
-    if result != 0:
-        display_message(get_current_error_level(), "Build failed.")
-    else:
+    if result:
         display_message(0, f"Package {debian_package_path} built successfully.")
+    else:
+        display_message(get_current_error_level(), "Build failed.")
 
     increment_error_level()
 
