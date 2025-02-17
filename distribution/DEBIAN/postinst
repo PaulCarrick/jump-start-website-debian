@@ -1,7 +1,0 @@
-#!/bin/bash
-
-set -e  # Exit on error
-
-trap "echo 'Installation canceled.'; db_stop; exit 1" SIGINT
-/bin/sh ../tmp/jump-start-website/rails//installation//install.sh
-exit 0
