@@ -64,7 +64,7 @@ def main():
             sys.exit(0)
 
     if args.copy:
-        shutil.copytree(args.output_directory, args.distribution_directory)
+        shutil.copytree(args.output_directory, args.distribution_directory, dirs_exist_ok=True)
         change_ownership_recursive(args.distribution_directory, "www-data", "www-data")
 
     display_message(0, f"Package {args.package_description} built successfully.")
