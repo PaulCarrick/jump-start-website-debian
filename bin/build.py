@@ -217,7 +217,7 @@ def build_packages_files(main_path, debian_path, binary_directories, deb_filenam
         try:
             with open(package_file, "w") as file:
                 for line in output:
-                    file.write(line)
+                    file.write(f"{line}\n")
         except Exception as e:
             display_message(get_current_error_level(), f"Can't write to {package_file}. Error: {e}")
 
@@ -258,10 +258,10 @@ def build_release(stable_path, gpg_key):
         output = []
 
         if not suite_exists:
-            output.append("Suite: stable\n")
+            output.append("Suite: stable")
 
         if not codename_exists:
-            output.append("Codename: stable\n")
+            output.append("Codename: stable")
 
         for line in release_output:
             output.append(line)
@@ -271,7 +271,7 @@ def build_release(stable_path, gpg_key):
     try:
         with open("Release", "w") as file:
             for line in release_output:
-                file.write(line)
+                file.write(f"{line}\n")
     except Exception as e:
         display_message(get_current_error_level(), f"Cannot write Release: {str(e)}.")
 
