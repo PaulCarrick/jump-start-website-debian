@@ -30,7 +30,8 @@ def main():
 
     # Setup variables
     deb_package_path = f"{args.output_directory}/pool/main"
-    debian_package_file = f"{deb_package_path}/{args.filename}"
+    debian_package_filename = args.filename
+    debian_package_file = f"{deb_package_path}/{debian_package_filename}"
     stable_path = f"{args.output_directory}/dists/stable"
     main_path = f"{stable_path}/main"
     gpg_key = args.gpg_key or os.getenv("GPG_KEY")
@@ -47,7 +48,7 @@ def main():
         build_debian_package(debian_package_file)
 
     build_translation_file(stable_path)
-    build_packages_files(main_path, binary_directories, debian_package_file)
+    build_packages_files(deb_package_path, binary_directories, f"pool/main/{debian_package_filename}")
     build_release(stable_path, gpg_key)
 
     if not args.install:
