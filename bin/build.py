@@ -207,7 +207,7 @@ def build_packages_files(main_path, debian_path, binary_directories, deb_filenam
 
         for line in package_contents:
             if line.startswith("Filename:"):
-                line = f"Filename: pool/main/{deb_filename}"
+                line = f"Filename: {deb_filename}"
 
             output.append(line)
 
