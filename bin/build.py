@@ -255,7 +255,7 @@ def parse_arguments():
                         help="Specify the templates directory",
                         default=template_directory)
     parser.add_argument("-v", "--version",
-                        help="Specify the package version", default="1.0.0")
+                        help="Specify the package version", default="1.0.1")
     parser.add_argument("-y", "--yes",
                         help="Automatically install the package without asking",
                         action="store_true", dest="auto_install", default=False)
