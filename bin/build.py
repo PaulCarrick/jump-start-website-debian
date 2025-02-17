@@ -84,6 +84,7 @@ def parse_arguments():
     parser.add_argument("-d", "--distribution_directory",
                         help="Specify the distribution path",
                         default="/var/www/html/distributions/debian")
+    parser.add_argument("-f", "--filename", help="Specify the debian packe filename.")
     parser.add_argument("-g", "--gpg_key", help="Specify the gpg key for signing",
                         default=os.getenv("GPG_KEY"))
     parser.add_argument("-n", "--no-build", help="Don't build the package",
