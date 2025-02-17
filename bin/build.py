@@ -93,7 +93,10 @@ def parse_arguments():
                         action="store_false", dest="install", default=True)
     parser.add_argument("-o", "--output_directory", help="Specify the output directory",
                         default=output_directory)
-    parser.add_argument("-p", "--package-description",
+    parser.add_argument("-p", "--package",
+                        help="Specify the package name",
+                        default="jump-start-website")
+    parser.add_argument("-P", "--package-description",
                         help="Specify the package description",
                         default="Jump Start Website")
     parser.add_argument("-s", "--skip-copy", help="Don't copy the package",
