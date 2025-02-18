@@ -4,8 +4,7 @@ set -e  # Exit on error
 
 echo "Installing Jump Start Website..."
 mkdir -p  /usr/local/jump-start-website
-cp -r ../tmp/jump-start-website/rails/ /usr/local/jump-start-website
-rm -rf ../tmp
-echo "Jump Start Website Installed to /usr/local/jump-start-website."
-echo "To finish the installation, run: sudo /usr/local/jump-start-website/installation/install"
+cp -r ../tmp/jump-start-website /usr/local
+echo "Jump Start Website Installed to /usr/local/jump-start-website." >&2
+echo "To finish the installation, run: sudo /usr/local/jump-start-website/installation/install" >&2
 exit 0
