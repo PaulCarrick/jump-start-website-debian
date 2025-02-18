@@ -208,7 +208,8 @@ def build_packages_files(main_path, debian_path, binary_directories, deb_filenam
         for line in package_contents:
             if line.startswith("Filename:"):
                 line = f"Filename: {deb_filename}"
-
+            elif line.startswith("Package: ruby") and (binary_directory == "binary-arm64"):
+                break
             output.append(line)
 
         package_file = "Packages"
@@ -261,7 +262,7 @@ def build_release(stable_path, gpg_key):
             output.append("Suite: stable")
 
         if not codename_exists:
-            output.append("Codename: stable")
+            output.append("Codename: Package")
 
         for line in release_output:
             output.append(line)
