@@ -207,7 +207,7 @@ def build_packages_files(main_path, debian_path, binary_directories):
 
         for line in package_contents:
             if line.startswith("Filename:"):
-                line = "Filename: " + line.split("pool/main/", 1)[-1]
+                line = "Filename: pool/main/" + line.split("pool/main/", 1)[-1]
             elif line.startswith("Package: ruby") and (binary_directory == "binary-arm64"):
                 break
             output.append(line)
