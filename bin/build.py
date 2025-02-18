@@ -48,7 +48,7 @@ def main():
         build_debian_package(debian_package_file)
 
     build_translation_file(stable_path)
-    build_packages_files(main_path, deb_package_path, binary_directories, f"pool/main/{debian_package_filename}")
+    build_packages_files(main_path, deb_package_path, binary_directories)
     build_release(stable_path, gpg_key)
 
     if not args.install:
@@ -85,7 +85,7 @@ def parse_arguments():
     parser.add_argument("-d", "--distribution_directory",
                         help="Specify the distribution path",
                         default="/var/www/html/distributions/debian")
-    parser.add_argument("-f", "--filename", help="Specify the debian packe filename.")
+    parser.add_argument("-f", "--filename", help="Specify the debian package filename.")
     parser.add_argument("-g", "--gpg_key", help="Specify the gpg key for signing",
                         default=os.getenv("GPG_KEY"))
     parser.add_argument("-n", "--no-build", help="Don't build the package",
@@ -178,14 +178,14 @@ def build_translation_file(stable_path):
 
 
 # noinspection PyBroadException
-def build_packages_files(main_path, debian_path, binary_directories, deb_filename):
+def build_packages_files(main_path, debian_path, binary_directories):
     """
     Build the Packages files.
 
     Args:
         main_path (str): Path to the main dir at output/dists/stable/main.
+        debian_path (str): Path to the debian dir at output/dists/stable/.
         binary_directories (list): Names of the binary package directories.
-        deb_file_path (str): relative path to the Debian package.
     """
     for binary_directory in binary_directories:
         cwd = os.getcwd()
