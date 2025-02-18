@@ -2,6 +2,10 @@
 
 set -e  # Exit on error
 
-trap "echo 'Installation canceled.'; db_stop; exit 1" SIGINT
-/bin/sh ../tmp/jump-start-website/rails//installation//install.sh
+echo "Installing Jump Start Website..."
+mkdir -p  /usr/local/jump-start-website
+cp -r ../tmp/jump-start-website/rails/ /usr/local/jump-start-website
+rm -rf ../tmp
+echo "Jump Start Website Installed to /usr/local/jump-start-website."
+echo "To finish the installation, run: sudo /usr/local/jump-start-website/installation/install"
 exit 0
